@@ -1,3 +1,5 @@
+import { createSlice } from '@reduxjs/toolkit';
+
 const paginationSlice = createSlice({
     name: 'paginationSlice',
     initialState:{

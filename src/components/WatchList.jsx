@@ -50,7 +50,7 @@ const WatchList = () => {
     function handleAscRatings() {
         const sortedAsc = watchList.sort((a, b) => a.vote_average - b.vote_average)
         // to create a copy of array, since .sort returns same reference of memory
-        setWatch([...sortedAsc])
+        setWatchList([...sortedAsc])
     }
 
     function handleDescRatings() {

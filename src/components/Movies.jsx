@@ -5,6 +5,8 @@ import axios from 'axios'
 import { WatchListContext } from "../contexts/WatchListContext";
 import paginationSlice from "../redux/paginationSlice";
 import { useSelector, useDispatch } from 'react-redux'
+import { fetchMovieMiddleware } from '../middlewares/fetchMovieMiddleware';
+import moviesSlice from '../redux/moviesSlice';
 
 const Movies = () => {
     // static data
@@ -57,10 +59,12 @@ const Movies = () => {
 
     // pageNo as state var as React must know when there is a change in pageNo, it has to re-render the page
     // dynamic data
-    const [ movies, setMovies ] = useState([])
+    // const [ movies, setMovies ] = useState([])
+    const { movies, loading, error } = useSelector(state => state.moviesSlice)
 
     // const [ pageNo, setPageNo ] = useState(1) - comment to access from slice
-    const pageNo = useSelector((state) => state.pageNo)
+    // const pageNo = useSelector((state) => state.pageNo)
+    const { pageNo } = useSelector((state) => state.paginationSlice)
     const dispatch = useDispatch()
 
     // const [ watchList, setWatchList ] = useState([])
@@ -101,27 +105,44 @@ const Movies = () => {
     // }
 
 
+    // useEffect(() => {
+    //     // const API_KEY = import.meta.env.REACT_APP_TMDB_API_KEY;
+    //     axios.get(`https://api.themoviedb.org/3/trending/movie/day?api_key=67e809dff6e60e54b35062bc7d6519be&page=${pageNo}`)
+    //         // axios.get(`https://api.themoviedb.org/3/trending/movie/day?api_key=${API_KEY}&page=${pageNo}`)
+    //         .then(response => {
+    //             // console.log(response.data);
+    //             setMovies(response.data.results)
+    //         })
+    //         .catch(error => {
+    //             console.error("API error", error);
+    //         });
+    // }, [pageNo])
+
     useEffect(() => {
-        axios.get(`https://api.themoviedb.org/3/trending/movie/day?api_key=67e809dff6e60e54b35062bc7d6519be&page=${pageNo}`)
-            .then(response => {
-                // console.log(response.data);
-                setMovies(response.data.results)
-            })
-            .catch(error => {
-                console.error(error);
-            });
+        dispatch((fetchMovieMiddleware(pageNo)));
     }, [pageNo])
+
+    console.log('moviesssss', movies)
 
     function handleNext () {
         // setPageNo(pageNo + 1)
-        dispatch(handleNext())
+        // dispatch(handleNext())
+        dispatch(paginationSlice.actions.handleNext())
     }
 
     function handlePrevious () {
         if (pageNo > 1) {
             // setPageNo(pageNo - 1)
-            dispatch(handlePrevious())
+            // dispatch(handlePrevious())
+            dispatch(paginationSlice.actions.handlePrevious())
         }    
+    }
+
+    if (loading) {
+        return <h4>Trending movies loading...</h4>
+    }
+    if (error) {
+        return <h4>Try again later...</h4>
     }
 
     return <>
